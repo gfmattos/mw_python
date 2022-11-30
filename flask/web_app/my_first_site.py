@@ -1,15 +1,22 @@
-from flask import Flask
+from flask import Flask, render_template
 
 app = Flask(__name__)
 
-#1 HomePage
-
-#1.1 Route
-
-#1.2 Function
+# HomePage
 @app.route('/')
 def homepage():
-    return 'Thats my first site'
+    return render_template('homepage.html')
+
+# Contacts
+@app.route('/contacts')
+def contacts():
+    return render_template('contacts.html')
+
+# Users
+@app.route('/user/<name>')
+def user(name):
+    return render_template('user.html',name=name)
 
 # Run Site
-app.run()
+if __name__ == '__main__':
+    app.run(debug=True)
