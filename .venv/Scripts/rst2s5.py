@@ -1,4 +1,4 @@
-#!d:\docs\my_workspace\lab_house\mw_git\mw_python\.venv\scripts\python.exe
+#!D:\DOCS\my_workspace\lab_house\mw_git\mw_python\.venv\Scripts\python.exe
 
 # $Id: rst2s5.py 8927 2022-01-03 23:50:05Z milde $
 # Author: Chris Liechti <cliechti@gmx.net>

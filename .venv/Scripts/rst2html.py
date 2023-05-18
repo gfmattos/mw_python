@@ -1,4 +1,4 @@
-#!d:\docs\my_workspace\lab_house\mw_git\mw_python\.venv\scripts\python.exe
+#!D:\DOCS\my_workspace\lab_house\mw_git\mw_python\.venv\Scripts\python.exe
 
 # $Id: rst2html.py 8927 2022-01-03 23:50:05Z milde $
 # Author: David Goodger <goodger@python.org>

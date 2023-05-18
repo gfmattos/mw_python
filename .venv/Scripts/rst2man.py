@@ -1,4 +1,4 @@
-#!d:\docs\my_workspace\lab_house\mw_git\mw_python\.venv\scripts\python.exe
+#!D:\DOCS\my_workspace\lab_house\mw_git\mw_python\.venv\Scripts\python.exe
 
 # Author:
 # Contact: grubert@users.sf.net

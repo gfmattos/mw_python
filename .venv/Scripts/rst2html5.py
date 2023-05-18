@@ -1,4 +1,4 @@
-#!d:\docs\my_workspace\lab_house\mw_git\mw_python\.venv\scripts\python.exe
+#!D:\DOCS\my_workspace\lab_house\mw_git\mw_python\.venv\Scripts\python.exe
 # :Copyright: © 2015 Günter Milde.
 # :License: Released under the terms of the `2-Clause BSD license`_, in short:
 #

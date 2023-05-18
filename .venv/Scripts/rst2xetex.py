@@ -1,4 +1,4 @@
-#!d:\docs\my_workspace\lab_house\mw_git\mw_python\.venv\scripts\python.exe
+#!D:\DOCS\my_workspace\lab_house\mw_git\mw_python\.venv\Scripts\python.exe
 
 # $Id: rst2xetex.py 8956 2022-01-20 10:11:44Z milde $
 # Author: Guenter Milde
