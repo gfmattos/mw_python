@@ -1,4 +1,4 @@
-from typing import Optional
+from __future__ import annotations
 
 import pyperclip
 
@@ -18,7 +18,7 @@ class PyperclipClipboard(Clipboard):
     """
 
     def __init__(self) -> None:
-        self._data: Optional[ClipboardData] = None
+        self._data: ClipboardData | None = None
 
     def set_data(self, data: ClipboardData) -> None:
         self._data = data

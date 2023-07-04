@@ -2,6 +2,7 @@
 # 2.0, and the BSD License. See the LICENSE file in the root of this repository
 # for complete details.
 
+from __future__ import annotations
 
 import abc
 import typing
@@ -9,9 +10,7 @@ from math import gcd
 
 from cryptography.hazmat.primitives import _serialization, hashes
 from cryptography.hazmat.primitives._asymmetric import AsymmetricPadding
-from cryptography.hazmat.primitives.asymmetric import (
-    utils as asym_utils,
-)
+from cryptography.hazmat.primitives.asymmetric import utils as asym_utils
 
 
 class RSAPrivateKey(metaclass=abc.ABCMeta):
@@ -21,14 +20,15 @@ class RSAPrivateKey(metaclass=abc.ABCMeta):
         Decrypts the provided ciphertext.
         """
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def key_size(self) -> int:
         """
         The bit length of the public modulus.
         """
 
     @abc.abstractmethod
-    def public_key(self) -> "RSAPublicKey":
+    def public_key(self) -> RSAPublicKey:
         """
         The RSAPublicKey associated with this private key.
         """
@@ -45,7 +45,7 @@ class RSAPrivateKey(metaclass=abc.ABCMeta):
         """
 
     @abc.abstractmethod
-    def private_numbers(self) -> "RSAPrivateNumbers":
+    def private_numbers(self) -> RSAPrivateNumbers:
         """
         Returns an RSAPrivateNumbers.
         """
@@ -72,14 +72,15 @@ class RSAPublicKey(metaclass=abc.ABCMeta):
         Encrypts the given plaintext.
         """
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def key_size(self) -> int:
         """
         The bit length of the public modulus.
         """
 
     @abc.abstractmethod
-    def public_numbers(self) -> "RSAPublicNumbers":
+    def public_numbers(self) -> RSAPublicNumbers:
         """
         Returns an RSAPublicNumbers
         """
@@ -115,6 +116,12 @@ class RSAPublicKey(metaclass=abc.ABCMeta):
     ) -> bytes:
         """
         Recovers the original data from the signature.
+        """
+
+    @abc.abstractmethod
+    def __eq__(self, other: object) -> bool:
+        """
+        Checks equality.
         """
 
 
@@ -297,7 +304,7 @@ class RSAPrivateNumbers:
         dmp1: int,
         dmq1: int,
         iqmp: int,
-        public_numbers: "RSAPublicNumbers",
+        public_numbers: RSAPublicNumbers,
     ):
         if (
             not isinstance(p, int)
@@ -351,15 +358,22 @@ class RSAPrivateNumbers:
         return self._iqmp
 
     @property
-    def public_numbers(self) -> "RSAPublicNumbers":
+    def public_numbers(self) -> RSAPublicNumbers:
         return self._public_numbers
 
-    def private_key(self, backend: typing.Any = None) -> RSAPrivateKey:
+    def private_key(
+        self,
+        backend: typing.Any = None,
+        *,
+        unsafe_skip_rsa_key_validation: bool = False,
+    ) -> RSAPrivateKey:
         from cryptography.hazmat.backends.openssl.backend import (
             backend as ossl,
         )
 
-        return ossl.load_rsa_private_numbers(self)
+        return ossl.load_rsa_private_numbers(
+            self, unsafe_skip_rsa_key_validation
+        )
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, RSAPrivateNumbers):

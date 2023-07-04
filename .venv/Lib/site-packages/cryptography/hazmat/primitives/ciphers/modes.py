@@ -2,6 +2,7 @@
 # 2.0, and the BSD License. See the LICENSE file in the root of this repository
 # for complete details.
 
+from __future__ import annotations
 
 import abc
 import typing
@@ -16,7 +17,8 @@ from cryptography.hazmat.primitives.ciphers import algorithms
 
 
 class Mode(metaclass=abc.ABCMeta):
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def name(self) -> str:
         """
         A string naming this mode (e.g. "ECB", "CBC").
@@ -31,7 +33,8 @@ class Mode(metaclass=abc.ABCMeta):
 
 
 class ModeWithInitializationVector(Mode, metaclass=abc.ABCMeta):
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def initialization_vector(self) -> bytes:
         """
         The value of the initialization vector for this mode as bytes.
@@ -39,7 +42,8 @@ class ModeWithInitializationVector(Mode, metaclass=abc.ABCMeta):
 
 
 class ModeWithTweak(Mode, metaclass=abc.ABCMeta):
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def tweak(self) -> bytes:
         """
         The value of the tweak for this mode as bytes.
@@ -47,7 +51,8 @@ class ModeWithTweak(Mode, metaclass=abc.ABCMeta):
 
 
 class ModeWithNonce(Mode, metaclass=abc.ABCMeta):
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def nonce(self) -> bytes:
         """
         The value of the nonce for this mode as bytes.
@@ -55,7 +60,8 @@ class ModeWithNonce(Mode, metaclass=abc.ABCMeta):
 
 
 class ModeWithAuthenticationTag(Mode, metaclass=abc.ABCMeta):
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def tag(self) -> typing.Optional[bytes]:
         """
         The value of the tag supplied to the constructor of this mode.
@@ -89,9 +95,7 @@ def _check_nonce_length(
             _Reasons.UNSUPPORTED_CIPHER,
         )
     if len(nonce) * 8 != algorithm.block_size:
-        raise ValueError(
-            "Invalid nonce size ({}) for {}.".format(len(nonce), name)
-        )
+        raise ValueError(f"Invalid nonce size ({len(nonce)}) for {name}.")
 
 
 def _check_iv_and_key_length(

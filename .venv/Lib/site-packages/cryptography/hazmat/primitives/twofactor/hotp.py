@@ -2,6 +2,7 @@
 # 2.0, and the BSD License. See the LICENSE file in the root of this repository
 # for complete details.
 
+from __future__ import annotations
 
 import base64
 import typing
@@ -11,12 +12,11 @@ from cryptography.hazmat.primitives import constant_time, hmac
 from cryptography.hazmat.primitives.hashes import SHA1, SHA256, SHA512
 from cryptography.hazmat.primitives.twofactor import InvalidToken
 
-
-_ALLOWED_HASH_TYPES = typing.Union[SHA1, SHA256, SHA512]
+HOTPHashTypes = typing.Union[SHA1, SHA256, SHA512]
 
 
 def _generate_uri(
-    hotp: "HOTP",
+    hotp: HOTP,
     type_name: str,
     account_name: str,
     issuer: typing.Optional[str],
@@ -46,7 +46,7 @@ class HOTP:
         self,
         key: bytes,
         length: int,
-        algorithm: _ALLOWED_HASH_TYPES,
+        algorithm: HOTPHashTypes,
         backend: typing.Any = None,
         enforce_key_length: bool = True,
     ) -> None:
@@ -57,7 +57,7 @@ class HOTP:
             raise TypeError("Length parameter must be an integer type.")
 
         if length < 6 or length > 8:
-            raise ValueError("Length of HOTP has to be between 6 to 8.")
+            raise ValueError("Length of HOTP has to be between 6 and 8.")
 
         if not isinstance(algorithm, (SHA1, SHA256, SHA512)):
             raise TypeError("Algorithm must be SHA1, SHA256 or SHA512.")

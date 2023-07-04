@@ -2,14 +2,12 @@
 # 2.0, and the BSD License. See the LICENSE file in the root of this repository
 # for complete details.
 
+from __future__ import annotations
 
 import typing
 
 from cryptography import utils
-from cryptography.exceptions import (
-    AlreadyFinalized,
-    InvalidKey,
-)
+from cryptography.exceptions import AlreadyFinalized, InvalidKey
 from cryptography.hazmat.primitives import constant_time, hashes
 from cryptography.hazmat.primitives.kdf import KeyDerivationFunction
 
@@ -28,9 +26,7 @@ class X963KDF(KeyDerivationFunction):
     ):
         max_len = algorithm.digest_size * (2**32 - 1)
         if length > max_len:
-            raise ValueError(
-                "Cannot derive keys larger than {} bits.".format(max_len)
-            )
+            raise ValueError(f"Cannot derive keys larger than {max_len} bits.")
         if sharedinfo is not None:
             utils._check_bytes("sharedinfo", sharedinfo)
 

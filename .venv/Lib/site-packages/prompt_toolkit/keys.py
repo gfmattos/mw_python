@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 from enum import Enum
-from typing import Dict, List
 
 __all__ = [
     "Keys",
@@ -204,11 +205,11 @@ class Keys(str, Enum):
     ShiftControlEnd = ControlShiftEnd
 
 
-ALL_KEYS: List[str] = [k.value for k in Keys]
+ALL_KEYS: list[str] = [k.value for k in Keys]
 
 
 # Aliases.
-KEY_ALIASES: Dict[str, str] = {
+KEY_ALIASES: dict[str, str] = {
     "backspace": "c-h",
     "c-space": "c-@",
     "enter": "c-m",

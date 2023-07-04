@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 import sys
 
 assert sys.platform == "win32"
 
-from typing import Any, Optional, TextIO
+from typing import Any, TextIO
 
 from prompt_toolkit.data_structures import Size
 
@@ -33,7 +35,7 @@ class ConEmuOutput:
     """
 
     def __init__(
-        self, stdout: TextIO, default_color_depth: Optional[ColorDepth] = None
+        self, stdout: TextIO, default_color_depth: ColorDepth | None = None
     ) -> None:
         self.win32_output = Win32Output(stdout, default_color_depth=default_color_depth)
         self.vt100_output = Vt100_Output(

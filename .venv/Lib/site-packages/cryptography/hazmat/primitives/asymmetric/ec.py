@@ -2,17 +2,15 @@
 # 2.0, and the BSD License. See the LICENSE file in the root of this repository
 # for complete details.
 
+from __future__ import annotations
 
 import abc
 import typing
-import warnings
 
 from cryptography import utils
 from cryptography.hazmat._oid import ObjectIdentifier
 from cryptography.hazmat.primitives import _serialization, hashes
-from cryptography.hazmat.primitives.asymmetric import (
-    utils as asym_utils,
-)
+from cryptography.hazmat.primitives.asymmetric import utils as asym_utils
 
 
 class EllipticCurveOID:
@@ -38,13 +36,15 @@ class EllipticCurveOID:
 
 
 class EllipticCurve(metaclass=abc.ABCMeta):
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def name(self) -> str:
         """
         The name of the curve. e.g. secp256r1.
         """
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def key_size(self) -> int:
         """
         Bit size of a secret scalar for the curve.
@@ -52,7 +52,8 @@ class EllipticCurve(metaclass=abc.ABCMeta):
 
 
 class EllipticCurveSignatureAlgorithm(metaclass=abc.ABCMeta):
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def algorithm(
         self,
     ) -> typing.Union[asym_utils.Prehashed, hashes.HashAlgorithm]:
@@ -64,7 +65,7 @@ class EllipticCurveSignatureAlgorithm(metaclass=abc.ABCMeta):
 class EllipticCurvePrivateKey(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def exchange(
-        self, algorithm: "ECDH", peer_public_key: "EllipticCurvePublicKey"
+        self, algorithm: ECDH, peer_public_key: EllipticCurvePublicKey
     ) -> bytes:
         """
         Performs a key exchange operation using the provided algorithm with the
@@ -72,18 +73,20 @@ class EllipticCurvePrivateKey(metaclass=abc.ABCMeta):
         """
 
     @abc.abstractmethod
-    def public_key(self) -> "EllipticCurvePublicKey":
+    def public_key(self) -> EllipticCurvePublicKey:
         """
         The EllipticCurvePublicKey for this private key.
         """
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def curve(self) -> EllipticCurve:
         """
         The EllipticCurve that this key is on.
         """
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def key_size(self) -> int:
         """
         Bit size of a secret scalar for the curve.
@@ -100,7 +103,7 @@ class EllipticCurvePrivateKey(metaclass=abc.ABCMeta):
         """
 
     @abc.abstractmethod
-    def private_numbers(self) -> "EllipticCurvePrivateNumbers":
+    def private_numbers(self) -> EllipticCurvePrivateNumbers:
         """
         Returns an EllipticCurvePrivateNumbers.
         """
@@ -121,20 +124,22 @@ EllipticCurvePrivateKeyWithSerialization = EllipticCurvePrivateKey
 
 
 class EllipticCurvePublicKey(metaclass=abc.ABCMeta):
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def curve(self) -> EllipticCurve:
         """
         The EllipticCurve that this key is on.
         """
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def key_size(self) -> int:
         """
         Bit size of a secret scalar for the curve.
         """
 
     @abc.abstractmethod
-    def public_numbers(self) -> "EllipticCurvePublicNumbers":
+    def public_numbers(self) -> EllipticCurvePublicNumbers:
         """
         Returns an EllipticCurvePublicNumbers.
         """
@@ -163,7 +168,7 @@ class EllipticCurvePublicKey(metaclass=abc.ABCMeta):
     @classmethod
     def from_encoded_point(
         cls, curve: EllipticCurve, data: bytes
-    ) -> "EllipticCurvePublicKey":
+    ) -> EllipticCurvePublicKey:
         utils._check_bytes("data", data)
 
         if not isinstance(curve, EllipticCurve):
@@ -178,6 +183,12 @@ class EllipticCurvePublicKey(metaclass=abc.ABCMeta):
         from cryptography.hazmat.backends.openssl.backend import backend
 
         return backend.load_elliptic_curve_public_bytes(curve, data)
+
+    @abc.abstractmethod
+    def __eq__(self, other: object) -> bool:
+        """
+        Checks equality.
+        """
 
 
 EllipticCurvePublicKeyWithSerialization = EllipticCurvePublicKey
@@ -362,50 +373,6 @@ class EllipticCurvePublicNumbers:
         )
 
         return ossl.load_elliptic_curve_public_numbers(self)
-
-    def encode_point(self) -> bytes:
-        warnings.warn(
-            "encode_point has been deprecated on EllipticCurvePublicNumbers"
-            " and will be removed in a future version. Please use "
-            "EllipticCurvePublicKey.public_bytes to obtain both "
-            "compressed and uncompressed point encoding.",
-            utils.PersistentlyDeprecated2019,
-            stacklevel=2,
-        )
-        # key_size is in bits. Convert to bytes and round up
-        byte_length = (self.curve.key_size + 7) // 8
-        return (
-            b"\x04"
-            + utils.int_to_bytes(self.x, byte_length)
-            + utils.int_to_bytes(self.y, byte_length)
-        )
-
-    @classmethod
-    def from_encoded_point(
-        cls, curve: EllipticCurve, data: bytes
-    ) -> "EllipticCurvePublicNumbers":
-        if not isinstance(curve, EllipticCurve):
-            raise TypeError("curve must be an EllipticCurve instance")
-
-        warnings.warn(
-            "Support for unsafe construction of public numbers from "
-            "encoded data will be removed in a future version. "
-            "Please use EllipticCurvePublicKey.from_encoded_point",
-            utils.PersistentlyDeprecated2019,
-            stacklevel=2,
-        )
-
-        if data.startswith(b"\x04"):
-            # key_size is in bits. Convert to bytes and round up
-            byte_length = (curve.key_size + 7) // 8
-            if len(data) == 2 * byte_length + 1:
-                x = int.from_bytes(data[1 : byte_length + 1], "big")
-                y = int.from_bytes(data[byte_length + 1 :], "big")
-                return cls(x, y, curve)
-            else:
-                raise ValueError("Invalid elliptic curve point data length")
-        else:
-            raise ValueError("Unsupported elliptic curve point type")
 
     @property
     def curve(self) -> EllipticCurve:

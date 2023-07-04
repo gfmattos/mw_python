@@ -1,6 +1,7 @@
+from __future__ import annotations
+
 import os
 from enum import Enum
-from typing import Optional
 
 __all__ = [
     "ColorDepth",
@@ -33,7 +34,7 @@ class ColorDepth(str, Enum):
     TRUE_COLOR = DEPTH_24_BIT
 
     @classmethod
-    def from_env(cls) -> Optional["ColorDepth"]:
+    def from_env(cls) -> ColorDepth | None:
         """
         Return the color depth if the $PROMPT_TOOLKIT_COLOR_DEPTH environment
         variable has been set.
@@ -41,6 +42,11 @@ class ColorDepth(str, Enum):
         This is a way to enforce a certain color depth in all prompt_toolkit
         applications.
         """
+        # Disable color if a `NO_COLOR` environment variable is set.
+        # See: https://no-color.org/
+        if os.environ.get("NO_COLOR"):
+            return cls.DEPTH_1_BIT
+
         # Check the `PROMPT_TOOLKIT_COLOR_DEPTH` environment variable.
         all_values = [i.value for i in ColorDepth]
         if os.environ.get("PROMPT_TOOLKIT_COLOR_DEPTH") in all_values:
@@ -49,7 +55,7 @@ class ColorDepth(str, Enum):
         return None
 
     @classmethod
-    def default(cls) -> "ColorDepth":
+    def default(cls) -> ColorDepth:
         """
         Return the default color depth for the default output.
         """

@@ -1,4 +1,4 @@
-from typing import List, Optional
+from __future__ import annotations
 
 from .key_processor import KeyPress
 
@@ -15,8 +15,8 @@ class EmacsState:
     def __init__(self) -> None:
         # Simple macro recording. (Like Readline does.)
         # (For Emacs mode.)
-        self.macro: Optional[List[KeyPress]] = []
-        self.current_recording: Optional[List[KeyPress]] = None
+        self.macro: list[KeyPress] | None = []
+        self.current_recording: list[KeyPress] | None = None
 
     def reset(self) -> None:
         self.current_recording = None

@@ -2,6 +2,7 @@
 # 2.0, and the BSD License. See the LICENSE file in the root of this repository
 # for complete details.
 
+from __future__ import annotations
 
 import abc
 import typing
@@ -13,7 +14,6 @@ from cryptography.exceptions import (
 )
 from cryptography.hazmat.primitives._cipheralgorithm import CipherAlgorithm
 from cryptography.hazmat.primitives.ciphers import modes
-
 
 if typing.TYPE_CHECKING:
     from cryptography.hazmat.backends.openssl.ciphers import (
@@ -61,7 +61,8 @@ class AEADDecryptionContext(AEADCipherContext, metaclass=abc.ABCMeta):
 
 
 class AEADEncryptionContext(AEADCipherContext, metaclass=abc.ABCMeta):
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def tag(self) -> bytes:
         """
         Returns tag bytes. This is only available after encryption is
@@ -80,8 +81,7 @@ class Cipher(typing.Generic[Mode]):
         algorithm: CipherAlgorithm,
         mode: Mode,
         backend: typing.Any = None,
-    ):
-
+    ) -> None:
         if not isinstance(algorithm, CipherAlgorithm):
             raise TypeError("Expected interface of CipherAlgorithm.")
 
@@ -96,13 +96,13 @@ class Cipher(typing.Generic[Mode]):
 
     @typing.overload
     def encryptor(
-        self: "Cipher[modes.ModeWithAuthenticationTag]",
+        self: Cipher[modes.ModeWithAuthenticationTag],
     ) -> AEADEncryptionContext:
         ...
 
     @typing.overload
     def encryptor(
-        self: "_CIPHER_TYPE",
+        self: _CIPHER_TYPE,
     ) -> CipherContext:
         ...
 
@@ -121,13 +121,13 @@ class Cipher(typing.Generic[Mode]):
 
     @typing.overload
     def decryptor(
-        self: "Cipher[modes.ModeWithAuthenticationTag]",
+        self: Cipher[modes.ModeWithAuthenticationTag],
     ) -> AEADDecryptionContext:
         ...
 
     @typing.overload
     def decryptor(
-        self: "_CIPHER_TYPE",
+        self: _CIPHER_TYPE,
     ) -> CipherContext:
         ...
 
@@ -140,7 +140,7 @@ class Cipher(typing.Generic[Mode]):
         return self._wrap_ctx(ctx, encrypt=False)
 
     def _wrap_ctx(
-        self, ctx: "_BackendCipherContext", encrypt: bool
+        self, ctx: _BackendCipherContext, encrypt: bool
     ) -> typing.Union[
         AEADEncryptionContext, AEADDecryptionContext, CipherContext
     ]:
@@ -165,9 +165,9 @@ _CIPHER_TYPE = Cipher[
 
 
 class _CipherContext(CipherContext):
-    _ctx: typing.Optional["_BackendCipherContext"]
+    _ctx: typing.Optional[_BackendCipherContext]
 
-    def __init__(self, ctx: "_BackendCipherContext") -> None:
+    def __init__(self, ctx: _BackendCipherContext) -> None:
         self._ctx = ctx
 
     def update(self, data: bytes) -> bytes:
@@ -189,10 +189,10 @@ class _CipherContext(CipherContext):
 
 
 class _AEADCipherContext(AEADCipherContext):
-    _ctx: typing.Optional["_BackendCipherContext"]
+    _ctx: typing.Optional[_BackendCipherContext]
     _tag: typing.Optional[bytes]
 
-    def __init__(self, ctx: "_BackendCipherContext") -> None:
+    def __init__(self, ctx: _BackendCipherContext) -> None:
         self._ctx = ctx
         self._bytes_processed = 0
         self._aad_bytes_processed = 0

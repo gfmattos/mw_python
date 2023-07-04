@@ -1,4 +1,3 @@
-
 import numpy as np
 import pytest
 from scipy.linalg import block_diag
@@ -6,7 +5,6 @@ from scipy.sparse import csc_matrix
 from numpy.testing import (TestCase, assert_array_almost_equal,
                            assert_array_less, assert_, assert_allclose,
                            suppress_warnings)
-from pytest import raises
 from scipy.optimize import (NonlinearConstraint,
                             LinearConstraint,
                             Bounds,
@@ -593,9 +591,10 @@ class TestTrustRegionConstr(TestCase):
 
     def test_raise_exception(self):
         prob = Maratos()
-
-        raises(ValueError, minimize, prob.fun, prob.x0, method='trust-constr',
-               jac='2-point', hess='2-point', constraints=prob.constr)
+        message = "Whenever the gradient is estimated via finite-differences"
+        with pytest.raises(ValueError, match=message):
+            minimize(prob.fun, prob.x0, method='trust-constr', jac='2-point',
+                     hess='2-point', constraints=prob.constr)
 
     def test_issue_9044(self):
         # https://github.com/scipy/scipy/issues/9044
@@ -762,8 +761,8 @@ class TestBoundedNelderMead:
 
     def test_invalid_bounds(self):
         prob = Rosenbrock()
-        with raises(ValueError, match=r"one of the lower bounds is greater "
-                                      r"than an upper bound."):
+        message = 'An upper bound is less than the corresponding lower bound.'
+        with pytest.raises(ValueError, match=message):
             bounds = Bounds([-np.inf, 1.0], [4.0, -5.0])
             minimize(prob.fun, [-10, 3],
                      method='Nelder-Mead',
@@ -773,8 +772,8 @@ class TestBoundedNelderMead:
                               "see gh-13846")
     def test_outside_bounds_warning(self):
         prob = Rosenbrock()
-        with raises(UserWarning, match=r"Initial guess is not within "
-                                       r"the specified bounds"):
+        message = "Initial guess is not within the specified bounds"
+        with pytest.warns(UserWarning, match=message):
             bounds = Bounds([-np.inf, 1.0], [4.0, 5.0])
             minimize(prob.fun, [-10, 8],
                      method='Nelder-Mead',

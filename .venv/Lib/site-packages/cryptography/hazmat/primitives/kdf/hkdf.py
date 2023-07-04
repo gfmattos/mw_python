@@ -2,14 +2,12 @@
 # 2.0, and the BSD License. See the LICENSE file in the root of this repository
 # for complete details.
 
+from __future__ import annotations
 
 import typing
 
 from cryptography import utils
-from cryptography.exceptions import (
-    AlreadyFinalized,
-    InvalidKey,
-)
+from cryptography.exceptions import AlreadyFinalized, InvalidKey
 from cryptography.hazmat.primitives import constant_time, hashes, hmac
 from cryptography.hazmat.primitives.kdf import KeyDerivationFunction
 
@@ -62,7 +60,7 @@ class HKDFExpand(KeyDerivationFunction):
 
         if length > max_length:
             raise ValueError(
-                "Cannot derive keys larger than {} octets.".format(max_length)
+                f"Cannot derive keys larger than {max_length} octets."
             )
 
         self._length = length

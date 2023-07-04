@@ -2,6 +2,7 @@
 # 2.0, and the BSD License. See the LICENSE file in the root of this repository
 # for complete details.
 
+from __future__ import annotations
 
 import abc
 import datetime
@@ -36,49 +37,57 @@ class SignatureAlgorithm(utils.Enum):
 
 
 class SignedCertificateTimestamp(metaclass=abc.ABCMeta):
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def version(self) -> Version:
         """
         Returns the SCT version.
         """
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def log_id(self) -> bytes:
         """
         Returns an identifier indicating which log this SCT is for.
         """
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def timestamp(self) -> datetime.datetime:
         """
         Returns the timestamp for this SCT.
         """
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def entry_type(self) -> LogEntryType:
         """
         Returns whether this is an SCT for a certificate or pre-certificate.
         """
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def signature_hash_algorithm(self) -> HashAlgorithm:
         """
         Returns the hash algorithm used for the SCT's signature.
         """
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def signature_algorithm(self) -> SignatureAlgorithm:
         """
         Returns the signing algorithm used for the SCT's signature.
         """
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def signature(self) -> bytes:
         """
         Returns the signature for this SCT.
         """
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def extension_bytes(self) -> bytes:
         """
         Returns the raw bytes of any extensions for this SCT.

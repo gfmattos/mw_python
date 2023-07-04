@@ -2,6 +2,7 @@
 # 2.0, and the BSD License. See the LICENSE file in the root of this repository
 # for complete details.
 
+from __future__ import annotations
 
 import base64
 import binascii
@@ -28,7 +29,7 @@ class Fernet:
         self,
         key: typing.Union[bytes, str],
         backend: typing.Any = None,
-    ):
+    ) -> None:
         try:
             key = base64.urlsafe_b64decode(key)
         except binascii.Error as exc:
